@@ -1,6 +1,6 @@
 const NewsList = ({newsList}) => {
     return (
-        <div className="container">
+        <div className="newList">
             {newsList.map(news => (
                 <div className="news" key={news?.id}>
                     <div className="row my-3">

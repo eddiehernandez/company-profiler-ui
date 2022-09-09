@@ -1,25 +1,24 @@
-import Navbar from "./Navbar";
-import Home from "./Home";
+import Navbar from "./components/Navbar";
+import Home from "./components/Home";
 import Footer from "./components/Footer"
 
 function App() {
   return (
+    <div className="main">
+      <div className="container py-4">
 
-    <div className="container">
-      <div className="row">
-        <div className="col">
-        <Navbar />
+        <header className="py-1 mb-3 border-bottom">
+          <Navbar />
+        </header>
+
+        <div className="py-1 mb-3">
+          <Home />        
         </div>
-      </div>
-      <div className="row">
-        <div className="col">
-        <Home />        
-        </div>
-      </div>
-      <div className="row">
-        <div className="col">
+
+        <footer className="pt-3 text-muted border-top">
           <Footer />
-        </div>
+        </footer>
+      
       </div>
     </div>
    

@@ -48,12 +48,12 @@ const SearchBar = ({handleSearch}) => {
 
 
     return (  
-        <div className="container-fluid border bg-light">
-            <form className="row p-2 g-3">
+
+            <form className="row pt-1 g-2">
                 <div className="col-auto">
                     { isPending && <div>Loading company search list, this will only take a few moments...</div> }
                     { error && <div>{ error }</div> }
-                    { companySearchList && <input value={ selectedCompany } onChange={ e => setSelectedCompany(e.target.value) } className="form-select" id="companySelection" name="companySelection" list="companyList" placeholder='company ticker or name...' /> }
+                    { companySearchList && <input value={ selectedCompany } onChange={ e => setSelectedCompany(e.target.value) } className="form-select" id="companySelection" name="companySelection" list="companyList" placeholder='company ticker or name...' size="25" /> }
                     <datalist id="companyList">
                         {
                             companySearchList && companySearchList.map(x => (
@@ -70,7 +70,7 @@ const SearchBar = ({handleSearch}) => {
                 </div>
             </form>
 
-        </div>
+
     );
 } 
 export default SearchBar

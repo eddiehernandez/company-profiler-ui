@@ -1,18 +1,21 @@
-const CompanyStats = ({companyStats}) => {
+import { convertToLargeCurrency, convertToCurrency } from '../utils/helperFunctions';
+
+
+const CompanyStats = ({companyStats, stockPrice}) => {
         
-    const outputGrowthPercent = (value) => (isNaN(parseFloat(value))) ? '' : parseFloat(value).toFixed(2).toString() + '%';
+    const outputPercent = (value) => (isNaN(parseFloat(value))) ? '' : parseFloat(value).toFixed(2).toString() + '%';
     const getRatioTextColor = (value, successValue, warningValue) => ((isNaN(parseFloat(value))) ? 'text-dark' : (parseFloat(value) >= successValue) ? 'text-success' : (parseFloat(value) >= warningValue) ? 'text-warning' : 'text-danger');
     const getRatioTextColorReverse = (value, successValue, warningValue) => ((isNaN(parseFloat(value))) ? 'text-dark' : (parseFloat(value) <= successValue) ? 'text-success' : (parseFloat(value) <= warningValue) ? 'text-warning' : 'text-danger');
-    const formatDate = (value) => ('0' + (new Date(value).getMonth() + 1)).slice(-2) + '/' + ('0' + new Date(value).getDate()).slice(-2) + '/' + new Date(value).getFullYear();
+    const formatDate = (value) => value ? ('(' + ('0' + (new Date(value).getMonth() + 1)).slice(-2) + '/' + ('0' + new Date(value).getDate()).slice(-2) + '/' + new Date(value).getFullYear() + ')') : '';
     
     return (  
-        <div className="container">
+        <div className="">
             <div className="row">
                 <div className="col-md-6">
                     <div className="card">
                         <h5 className="card-header">Income Statement</h5>
                         <div className="card-body">
-                            <table className="table">
+                            <table className="table table-sm">
                                 <thead>
                                     <tr>
                                         <th colSpan="2" scope="col">Revenue</th>
@@ -21,15 +24,15 @@ const CompanyStats = ({companyStats}) => {
                                 <tbody>
                                     <tr>
                                         <td>One Year (TTM):</td>
-                                        <td className={ getRatioTextColor(companyStats.revenueGrowthOneYearTTM, 15, 0) }>{outputGrowthPercent(companyStats.revenueGrowthOneYearTTM)}</td>
+                                        <td className={ getRatioTextColor(companyStats.revenueGrowthOneYearTTM, 15, 0) }>{outputPercent(companyStats.revenueGrowthOneYearTTM)}</td>
                                     </tr>
                                     <tr>
                                         <td>Three Year:</td>
-                                        <td className={ getRatioTextColor(companyStats.revenueGrowthThreeYear, 15, 0) }>{outputGrowthPercent(companyStats.revenueGrowthThreeYear)}</td>
+                                        <td className={ getRatioTextColor(companyStats.revenueGrowthThreeYear, 15, 0) }>{outputPercent(companyStats.revenueGrowthThreeYear)}</td>
                                     </tr>
                                     <tr>
                                         <td>Five Year:</td>
-                                        <td className={ getRatioTextColor(companyStats.revenueGrowthFiveYear, 15, 0) }>{outputGrowthPercent(companyStats.revenueGrowthFiveYear)}</td>
+                                        <td className={ getRatioTextColor(companyStats.revenueGrowthFiveYear, 15, 0) }>{outputPercent(companyStats.revenueGrowthFiveYear)}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -38,11 +41,25 @@ const CompanyStats = ({companyStats}) => {
                     <div className="card my-3">
                         <h5 className="card-header">Cash Flow</h5>
                         <div className="card-body">
-                            <table className="table">
+                            <table className="table table-sm">
                                 <tbody>
                                     <tr>
-                                        <td>Coming soon....</td>
-                                        <td></td>
+                                        <td>FCF (Annual):</td>
+                                        <td className={ getRatioTextColor(companyStats.freeCashFlowAnnual, .01, 0) }>{convertToLargeCurrency(companyStats.freeCashFlowAnnual)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            FCF per Share (TTM):<br/>
+                                            <small className="text-secondary">aka Owner Earnings</small>
+                                        </td>
+                                        <td className={ getRatioTextColor(companyStats.freeCashFlowPerShareTTM, .01, 0) }>{convertToCurrency(companyStats.freeCashFlowPerShareTTM)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Owner Earnings Yield:</td>
+                                        { !stockPrice && <td>N/A</td> }
+                                        { stockPrice && 
+                                            <td className={ getRatioTextColor(companyStats.freeCashFlowPerShareTTM / stockPrice, 10, 0)}>{ outputPercent(companyStats.freeCashFlowPerShareTTM / stockPrice) }</td>
+                                        }
                                     </tr>
                                 </tbody>
                             </table>
@@ -53,11 +70,11 @@ const CompanyStats = ({companyStats}) => {
                     <div className="card">
                         <h5 className="card-header">Balance Sheet</h5>
                         <div className="card-body">
-                            <table className="table">
+                            <table className="table table-sm">
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <a href="#collapseQuickRatio" data-bs-toggle="collapse">Quick Ratio</a> ({ formatDate(companyStats.quickRatioQuarterlyPeriod) }):
+                                            <a href="#collapseQuickRatio" data-bs-toggle="collapse">Quick Ratio: </a> <small className="text-secondary"><i>{ formatDate(companyStats.quickRatioQuarterlyPeriod) }</i></small>
                                         </td>
                                         <td className={ getRatioTextColor(companyStats.quickRatioQuarterly, 1.5, 1) }>{ companyStats.quickRatioQuarterly }</td>
                                     </tr>
@@ -75,7 +92,9 @@ const CompanyStats = ({companyStats}) => {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td> <a href="#collapseCurrentRatio" data-bs-toggle="collapse">Current Ratio</a> ({ formatDate(companyStats.currentRatioQuarterlyPeriod) }):</td>
+                                        <td>
+                                            <a href="#collapseCurrentRatio" data-bs-toggle="collapse">Current Ratio: </a> <small className="text-secondary"><i>{ formatDate(companyStats.currentRatioQuarterlyPeriod) }</i></small>
+                                        </td>
                                         <td className={ getRatioTextColor(companyStats.currentRatioQuarterly, 1.5, 1) }>{ companyStats.currentRatioQuarterly }</td>
                                     </tr>
                                     <tr className="collapse" id="collapseCurrentRatio">
@@ -92,17 +111,38 @@ const CompanyStats = ({companyStats}) => {
                                         </td>
                                     </tr>                                    
                                     <tr>
-                                        <td>LT Debt to Equity ({ formatDate(companyStats.longTermDebtToEquityQuarterlyPeriod) }):</td>
+                                        <td>LT Debt to Equity: <small className="text-secondary"><i>{ formatDate(companyStats.longTermDebtToEquityQuarterlyPeriod) }</i></small></td>
                                         <td className={ getRatioTextColorReverse(companyStats.longTermDebtToEquityQuarterly, 0.5, 1) }>{ companyStats.longTermDebtToEquityQuarterly }</td>
                                     </tr>
                                     <tr>
-                                        <td>Total Debt to Equity ({ formatDate(companyStats.totalDebtToEquityQuarterlyPeriod) }):</td>
+                                        <td>Total Debt to Equity: <small className="text-secondary"><i>{ formatDate(companyStats.totalDebtToEquityQuarterlyPeriod) }</i></small></td>
                                         <td className={ getRatioTextColorReverse(companyStats.totalDebtToEquityQuarterly, 0.5, 1) }>{ companyStats.totalDebtToEquityQuarterly }</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    <div className="card my-3">
+                        <h5 className="card-header">Dividends</h5>
+                        <div className="card-body">
+                            <table className="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td>Dividend Yield (TTM)</td>
+                                        <td>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dividend Growth Rate 5Y</td>
+                                        <td>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Payout Ratio (TTM)</td>
+                                        <td>...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>                     
                 </div>
 
             </div>

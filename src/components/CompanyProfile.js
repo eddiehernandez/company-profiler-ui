@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import NewsList from "./NewsList";
 import CompanyStats from "./CompanyStats";
+import { convertToLargeCurrency, convertToCurrency } from '../utils/helperFunctions';
 
 
 const CompanyProfile = ({companyTicker}) => {
@@ -8,19 +9,14 @@ const CompanyProfile = ({companyTicker}) => {
     const [company, setCompany] = useState(null);
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState(null);    
-
-    const convertMarketCap = (marketCap) => {
-        if (parseInt(marketCap).toString().length > 3) // Billions
-            return (parseFloat(marketCap) / 1000).toFixed(2).toString() + ' B';
-        else // Millions
-            return parseFloat(marketCap).toFixed(2).toString() + ' M';
-    }
+    const [showWelcome, setShowWelcome] = useState(true);
 
     useEffect(() => {
         if (companyTicker){
             setCompany(null); //clear out older company
             setIsPending(true);
             setError(false);
+            setShowWelcome(false);
             console.log(`loading company with ticker ${companyTicker}`);
             const url = process.env.NODE_ENV === 'development' ? `http://localhost:3000/companies/${companyTicker}` : `https://tw704iw1u2.execute-api.us-east-2.amazonaws.com/companies/${companyTicker}`;
             // console.log(process.env.NODE_ENV);
@@ -42,9 +38,11 @@ const CompanyProfile = ({companyTicker}) => {
                         exchange: data.exchange,
                         industry: data.industry,
                         logo: data.logo,
-                        marketCapitalization: convertMarketCap(data.marketCapitalization),
-                        sharesOutstanding: parseFloat(data.sharesOutstanding).toFixed(2).toString(),
+                        marketCapitalization: convertToLargeCurrency(data.marketCapitalization),
+                        sharesOutstanding: convertToLargeCurrency(data.sharesOutstanding),
                         website: data.website,
+                        stockPrice: data.stockPrice,
+                        stockPriceAsOfDateTime: data.stockPriceAsOfDateTime,
                         companyStats: data.companyStats,
                         companyNews: []
                     }
@@ -66,7 +64,7 @@ const CompanyProfile = ({companyTicker}) => {
                 .catch(err => {
                     setIsPending(false);
                     console.log(err.message);
-                    setError(`Unable to retrieve company, with ticker ${companyTicker}`);
+                    setError(`Unable to retrieve company, with ticker ${companyTicker}.  Tip: Make sure to select company ticker from list when performing a search.`);
                 });   
         }
     }, [companyTicker]);
@@ -76,51 +74,69 @@ const CompanyProfile = ({companyTicker}) => {
         <div className="CompanyProfile">
             { isPending && <div>Loading company: {companyTicker}...</div> }
             { error && <div>{ error }</div> }
-            {company && 
-            <div className="container">
-                <div className="row">
-                    <div className="col-8">
-                        <div className="container">
-                            <div className="row">
-                                <div className="col-4">Name:</div>
-                                <div className="col">{company.name}</div>
-                            </div>
-                            <div className="row">
-                                <div className="col-4">Ticker:</div>
-                                <div className="col">{company.ticker}</div>
-                            </div>
-
-                            <div className="row">
-                                <div className="col-4">Country:</div>
-                                <div className="col">{company.country}</div>
-                            </div>
-                            <div className="row">
-                                <div className="col-4">Currency:</div>
-                                <div className="col">{company.currency}</div>
-                            </div>
-                            <div className="row">
-                                <div className="col-4">Exchange:</div>
-                                <div className="col">{company.exchange}</div>
-                            </div>
-                            <div className="row">
-                                <div className="col-4">Industry:</div>
-                                <div className="col">{company.industry}</div>
-                            </div>
-                            <div className="row">
-                                <div className="col-4">MarketCap:</div>
-                                <div className="col">{company.marketCapitalization}</div>
-                            </div>
-                            <div className="row">
-                                <div className="col-4">Shares Outstanding:</div>
-                                <div className="col">{company.sharesOutstanding}</div>
-                            </div>
-                            <div className="row">
-                                <div className="col-4">Website:</div>
-                                <div className="col"><a rel="noreferrer" target="_blank" href={company.website}>{company.website}</a></div>
-                            </div>
-                        </div>
+            { showWelcome && 
+                <div className="p-5 mb-4 bg-light rounded-3">
+                    <div className="container-fluid py-5">
+                        <h1 className="display-5 fw-bold">Welcome</h1>
+                        <p className="col-md-8 fs-4">To get started, select the ticker symbol of a company you would like to research in the list above and click on search.  Enjoy!</p>
+                        <p className="col-md-8 fs-6">Usage Tips: <span className="text-success">Green numbers are good</span>, <span className="text-warning">Yellow numbers are borderline</span> and <span className="text-danger">Red numbers are bad.</span>  Click on labels to learn more about different ratios and their acceptable values.  Avoid buying shares in companies with Red numbers, unless you know what you are doing.</p>
                     </div>
-                    <div className="col-4 text-left"><img className="img-fluid float-left" alt="" src={company.logo} /></div>
+                </div>
+            }
+            {company && 
+            <div className="pt-3 border-top">
+                <div className="row">
+                    <div className="col-sm-8">
+                        <table className="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <td>Name:</td>
+                                    <td>{company.name}</td>
+                                </tr>
+                                <tr>
+                                    <td>Ticker:</td>
+                                    <td>{company.ticker}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Country:</td>
+                                    <td>{company.country}</td>
+                                </tr>
+                                <tr>
+                                    <td>Currency:</td>
+                                    <td>{company.currency}</td>
+                                </tr>
+                                <tr>
+                                    <td>Exchange:</td>
+                                    <td>{company.exchange}</td>
+                                </tr>
+                                <tr>
+                                    <td>Industry:</td>
+                                    <td>{company.industry}</td>
+                                </tr>
+                                <tr>
+                                    <td>MarketCap:</td>
+                                    <td>{company.marketCapitalization}</td>
+                                </tr>
+                                <tr>
+                                    <td>Shares Outstanding:</td>
+                                    <td>{company.sharesOutstanding}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Stock Price:<br />
+                                    </td>
+                                    <td>{convertToCurrency(company.stockPrice)} <small className="text-secondary"><i>({company.stockPriceAsOfDateTime})</i></small></td>
+                                </tr>
+                                <tr>
+                                    <td>Website:</td>
+                                    <td><a rel="noreferrer" target="_blank" href={company.website}>{company.website}</a></td>
+                                </tr>                                
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div className="col-sm-4 text-left"><img className="img-fluid float-left" alt="" src={company.logo} /></div>
                 </div>
                 <div className="row my-3">
                     <nav>
@@ -132,7 +148,7 @@ const CompanyProfile = ({companyTicker}) => {
                     <div className="tab-content" id="nav-tabContent">
                         <div className="tab-pane fade show active p-3" id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab">
                             <div className="company-stats">
-                                <CompanyStats companyStats={company?.companyStats}/>
+                                <CompanyStats companyStats={company?.companyStats} stockPrice={company.stockPrice}/>
                             </div>
                         </div>
                         <div className="tab-pane fade p-3" id="nav-news" role="tabpanel" aria-labelledby="nav-news-tab">
