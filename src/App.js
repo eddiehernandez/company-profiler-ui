@@ -1,5 +1,5 @@
 import Navbar from "./components/Navbar";
-import Home from "./components/Home";
+import Company from "./components/company/Company";
 import Footer from "./components/Footer"
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
         </header>
 
         <div className="py-1 mb-3">
-          <Home />        
+          <Company />        
         </div>
 
         <footer className="pt-3 text-muted border-top">

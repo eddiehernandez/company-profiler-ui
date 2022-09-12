@@ -9,6 +9,8 @@ Company Profiler allows non-finance professionals to easily perform fundamental 
 * Nodejs / Typescript
 * AWS API Gateway
 * AWS Lambda
+* Serverless Framework
+* Jest for Unit Testing
 * Finnhub.io Stock API
 
 ## Getting Started:

@@ -1,4 +1,4 @@
-import { convertToLargeCurrency, convertToCurrency } from '../utils/helperFunctions';
+import { convertToLargeCurrency, convertToCurrency } from "../../utils/helperFunctions"
 
 
 const CompanyStats = ({companyStats, stockPrice, sharesOutstanding}) => {

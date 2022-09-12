@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SearchBar from './SearchBar';
 import CompanyProfile from './CompanyProfile';
 
-const Home = () => {
+const Company = () => {
 
     const [companyTicker, setCompanyTicker] = useState(null);
 
@@ -21,4 +21,4 @@ const Home = () => {
       );
 }
  
-export default Home;
+export default Company;
