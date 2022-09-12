@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NewsList from "./NewsList";
 import CompanyStats from "./CompanyStats";
-import { convertToLargeCurrency, convertToCurrency } from '../utils/helperFunctions';
+import { convertToLargeCurrency, convertToCurrency, getRandomQuote } from '../utils/helperFunctions';
 
 
 const CompanyProfile = ({companyTicker}) => {
@@ -29,7 +29,7 @@ const CompanyProfile = ({companyTicker}) => {
                 })
                 .then(data => {
                     setIsPending(false);
-                    // console.log(data); //debug statement
+                    console.log(data); //debug statement
                     const myCompany = {
                         name: data.name,
                         ticker: data.ticker,
@@ -40,6 +40,7 @@ const CompanyProfile = ({companyTicker}) => {
                         logo: data.logo,
                         marketCapitalization: convertToLargeCurrency(data.marketCapitalization),
                         sharesOutstanding: convertToLargeCurrency(data.sharesOutstanding),
+                        sharesOutstandingRaw: data.sharesOutstanding,
                         website: data.website,
                         stockPrice: data.stockPrice,
                         stockPriceAsOfDateTime: data.stockPriceAsOfDateTime,
@@ -78,8 +79,16 @@ const CompanyProfile = ({companyTicker}) => {
                 <div className="p-5 mb-4 bg-light rounded-3">
                     <div className="container-fluid py-5">
                         <h1 className="display-5 fw-bold">Welcome</h1>
-                        <p className="col-md-8 fs-4">To get started, select the ticker symbol of a company you would like to research in the list above and click on search.  Enjoy!</p>
-                        <p className="col-md-8 fs-6">Usage Tips: <span className="text-success">Green numbers are good</span>, <span className="text-warning">Yellow numbers are borderline</span> and <span className="text-danger">Red numbers are bad.</span>  Click on labels to learn more about different ratios and their acceptable values.  Avoid buying shares in companies with Red numbers, unless you know what you are doing.</p>
+                        <p className="col-md-8 fs-4">To get started, select the ticker symbol of a company you would like to research above and click on search.</p>
+                        <p className="col-md-8 fs-6 mb-3">Usage Tips: <span className="text-success">Green numbers are good</span>, <span className="text-warning">Yellow numbers are borderline</span> and <span className="text-danger">Red numbers are bad.</span>  Click on labels to learn more about different ratios and their acceptable values.</p>
+                        <figure className="col-md-8">
+                            <blockquote className="blockquote">
+                                <p>{ getRandomQuote() }</p>
+                            </blockquote>
+                            <figcaption className="blockquote-footer">
+                                Warren Buffet
+                            </figcaption>
+                        </figure>
                     </div>
                 </div>
             }
@@ -90,21 +99,12 @@ const CompanyProfile = ({companyTicker}) => {
                         <table className="table table-sm">
                             <tbody>
                                 <tr>
-                                    <td>Name:</td>
-                                    <td>{company.name}</td>
+                                    <td>Company (Ticker):</td>
+                                    <td>{company.name} ({company.ticker})</td>
                                 </tr>
                                 <tr>
-                                    <td>Ticker:</td>
-                                    <td>{company.ticker}</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Country:</td>
-                                    <td>{company.country}</td>
-                                </tr>
-                                <tr>
-                                    <td>Currency:</td>
-                                    <td>{company.currency}</td>
+                                    <td>Country / Currency:</td>
+                                    <td>{company.country} / {company.currency}</td>
                                 </tr>
                                 <tr>
                                     <td>Exchange:</td>
@@ -136,7 +136,8 @@ const CompanyProfile = ({companyTicker}) => {
 
                         </table>
                     </div>
-                    <div className="col-sm-4 text-left"><img className="img-fluid float-left" alt="" src={company.logo} /></div>
+                    <div className="col-sm-1">&nbsp;</div>
+                    <div className="col-sm-3 text-left"><img className="img-fluid float-left" alt="" src={company.logo} /></div>
                 </div>
                 <div className="row my-3">
                     <nav>
@@ -148,7 +149,7 @@ const CompanyProfile = ({companyTicker}) => {
                     <div className="tab-content" id="nav-tabContent">
                         <div className="tab-pane fade show active p-3" id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab">
                             <div className="company-stats">
-                                <CompanyStats companyStats={company?.companyStats} stockPrice={company.stockPrice}/>
+                                <CompanyStats companyStats={company?.companyStats} stockPrice={company.stockPrice} sharesOutstanding={company.sharesOutstandingRaw} />
                             </div>
                         </div>
                         <div className="tab-pane fade p-3" id="nav-news" role="tabpanel" aria-labelledby="nav-news-tab">
