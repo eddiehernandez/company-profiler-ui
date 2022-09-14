@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import NewsList from "./NewsList";
 import CompanyStats from "./CompanyStats";
-import Trends from "./Trends";
+import TimeSeries from "./TimeSeries";
 import { convertToLargeCurrency, convertToCurrency, getRandomQuote } from '../../utils/helperFunctions';
 
 
-const CompanyProfile = ({companyTicker}) => {
+const CompanyProfile = ({companyTicker, host}) => {
 
     const [company, setCompany] = useState(null);
     const [isPending, setIsPending] = useState(false);
@@ -19,9 +19,8 @@ const CompanyProfile = ({companyTicker}) => {
             setError(false);
             setShowWelcome(false);
             console.log(`loading company with ticker ${companyTicker}`);
-            const url = process.env.NODE_ENV === 'development' ? `http://localhost:3000/companies/${companyTicker}` : `https://tw704iw1u2.execute-api.us-east-2.amazonaws.com/companies/${companyTicker}`;
-            // console.log(process.env.NODE_ENV);
-            // console.log(url);            
+            const url = `${host}/companies/${companyTicker}`
+            console.log(url);            
             fetch(url)
                 .then(res => {
                     if (!res.ok)
@@ -46,6 +45,7 @@ const CompanyProfile = ({companyTicker}) => {
                         stockPrice: data.stockPrice,
                         stockPriceAsOfDateTime: data.stockPriceAsOfDateTime,
                         companyStats: data.companyStats,
+                        timeSeries: data.timeSeries,
                         companyNews: []
                     }
                     for (const news of data.companyNews)
@@ -144,7 +144,7 @@ const CompanyProfile = ({companyTicker}) => {
                     <nav>
                         <div className="nav nav-tabs" id="nav-tab" role="tablist">
                             <button className="nav-link active" id="nav-stats-tab" data-bs-toggle="tab" data-bs-target="#nav-stats" type="button" role="tab" aria-controls="nav-stats" aria-selected="true">Stats</button>
-                            <button className="nav-link" id="nav-trends-tab" data-bs-toggle="tab" data-bs-target="#nav-trends" type="button" role="tab" aria-controls="nav-trends" aria-selected="false">Trends</button>
+                            <button className="nav-link" id="nav-series-tab" data-bs-toggle="tab" data-bs-target="#nav-series" type="button" role="tab" aria-controls="nav-series" aria-selected="false">Series</button>
                             <button className="nav-link" id="nav-news-tab" data-bs-toggle="tab" data-bs-target="#nav-news" type="button" role="tab" aria-controls="nav-news" aria-selected="false">News</button>
                         </div>
                     </nav>
@@ -154,9 +154,9 @@ const CompanyProfile = ({companyTicker}) => {
                                 <CompanyStats companyStats={company?.companyStats} stockPrice={company.stockPrice} sharesOutstanding={company.sharesOutstandingRaw} />
                             </div>
                         </div>
-                        <div className="tab-pane fade p-3" id="nav-trends" role="tabpanel" aria-labelledby="nav-trends-tab">
-                            <div className="time-trends">
-                                <Trends />
+                        <div className="tab-pane fade p-3" id="nav-series" role="tabpanel" aria-labelledby="nav-series-tab">
+                            <div className="time-series">
+                                <TimeSeries timeSeries={company.timeSeries} />
                             </div>
                         </div>
                         <div className="tab-pane fade p-3" id="nav-news" role="tabpanel" aria-labelledby="nav-news-tab">

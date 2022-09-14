@@ -1,12 +1,10 @@
-import { convertToLargeCurrency, convertToCurrency } from "../../utils/helperFunctions"
+import { convertToLargeCurrency, convertToCurrency, formatDate, getRatioTextColor, getRatioTextColorReverse } from "../../utils/helperFunctions"
 
 
 const CompanyStats = ({companyStats, stockPrice, sharesOutstanding}) => {
     const formatToPercent = (value) => (isNaN(parseFloat(value))) ? '' : (parseFloat(value)).toFixed(2).toString() + '%';    
     const convertAndFormatToPercent = (value) => (isNaN(parseFloat(value))) ? '' : (parseFloat(value) * 100).toFixed(2).toString() + '%';
-    const getRatioTextColor = (value, successValue, warningValue) => ((isNaN(parseFloat(value))) ? 'text-dark' : (parseFloat(value) >= successValue) ? 'text-success' : (parseFloat(value) >= warningValue) ? 'text-warning' : 'text-danger');
-    const getRatioTextColorReverse = (value, successValue, warningValue) => ((isNaN(parseFloat(value))) ? 'text-dark' : (parseFloat(value) <= successValue) ? 'text-success' : (parseFloat(value) <= warningValue) ? 'text-warning' : 'text-danger');
-    const formatDate = (value) => value ? ('(' + ('0' + (new Date(value).getMonth() + 1)).slice(-2) + '/' + ('0' + new Date(value).getDate()).slice(-2) + '/' + new Date(value).getFullYear() + ')') : '';
+
     return (  
         <div className="">
             <div className="row">
@@ -37,9 +35,9 @@ const CompanyStats = ({companyStats, stockPrice, sharesOutstanding}) => {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <a href="#collapseQuickRatio" data-bs-toggle="collapse">Quick Ratio: </a> <small className="text-secondary"><i>{ formatDate(companyStats.quickRatioQuarterlyPeriod) }</i></small>
+                                            <a href="#collapseQuickRatio" data-bs-toggle="collapse">Quick Ratio: </a> <small className="text-secondary"><i>{ formatDate(companyStats.quickRatioQuarterly.period) }</i></small>
                                         </td>
-                                        <td className={ getRatioTextColor(companyStats.quickRatioQuarterly, 1.5, 1) }>{ companyStats.quickRatioQuarterly }</td>
+                                        <td className={ getRatioTextColor(companyStats.quickRatioQuarterly.value, 1.5, 1) }>{ companyStats.quickRatioQuarterly.value }</td>
                                     </tr>
                                     <tr className="collapse" id="collapseQuickRatio">
                                         <td colSpan="2">
@@ -56,9 +54,9 @@ const CompanyStats = ({companyStats, stockPrice, sharesOutstanding}) => {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <a href="#collapseCurrentRatio" data-bs-toggle="collapse">Current Ratio: </a> <small className="text-secondary"><i>{ formatDate(companyStats.currentRatioQuarterlyPeriod) }</i></small>
+                                            <a href="#collapseCurrentRatio" data-bs-toggle="collapse">Current Ratio: </a> <small className="text-secondary"><i>{ formatDate(companyStats.currentRatioQuarterly.period) }</i></small>
                                         </td>
-                                        <td className={ getRatioTextColor(companyStats.currentRatioQuarterly, 1.5, 1) }>{ companyStats.currentRatioQuarterly }</td>
+                                        <td className={ getRatioTextColor(companyStats.currentRatioQuarterly.value, 1.5, 1) }>{ companyStats.currentRatioQuarterly.value }</td>
                                     </tr>
                                     <tr className="collapse" id="collapseCurrentRatio">
                                         <td colSpan="2">
@@ -74,12 +72,12 @@ const CompanyStats = ({companyStats, stockPrice, sharesOutstanding}) => {
                                         </td>
                                     </tr>                                    
                                     <tr>
-                                        <td>LT Debt to Equity: <small className="text-secondary"><i>{ formatDate(companyStats.longTermDebtToEquityQuarterlyPeriod) }</i></small></td>
-                                        <td className={ getRatioTextColorReverse(companyStats.longTermDebtToEquityQuarterly, 0.5, 1) }>{ companyStats.longTermDebtToEquityQuarterly }</td>
+                                        <td>LT Debt to Equity: <small className="text-secondary"><i>{ formatDate(companyStats.longTermDebtToEquityQuarterly.period) }</i></small></td>
+                                        <td className={ getRatioTextColorReverse(companyStats.longTermDebtToEquityQuarterly.value, 0.5, 1) }>{ companyStats.longTermDebtToEquityQuarterly.value }</td>
                                     </tr>
                                     <tr>
-                                        <td>Total Debt to Equity: <small className="text-secondary"><i>{ formatDate(companyStats.totalDebtToEquityQuarterlyPeriod) }</i></small></td>
-                                        <td className={ getRatioTextColorReverse(companyStats.totalDebtToEquityQuarterly, 0.5, 1) }>{ companyStats.totalDebtToEquityQuarterly }</td>
+                                        <td>Total Debt to Equity: <small className="text-secondary"><i>{ formatDate(companyStats.totalDebtToEquityQuarterly.period) }</i></small></td>
+                                        <td className={ getRatioTextColorReverse(companyStats.totalDebtToEquityQuarterly.value, 0.5, 1) }>{ companyStats.totalDebtToEquityQuarterly.value }</td>
                                     </tr>
 
                                     <tr>
@@ -134,19 +132,22 @@ const CompanyStats = ({companyStats, stockPrice, sharesOutstanding}) => {
                                         <th className="pt-4" colSpan="2">Management Effectiveness</th>
                                     </tr>
                                     <tr>
-                                        <td>Return on Equity: <small className="text-secondary"><i>{ formatDate(companyStats.roeTTMPeriod) }</i></small></td>
-                                        <td>{ convertAndFormatToPercent(companyStats.roeTTM) }</td>
+                                        <td>Return on Equity: <small className="text-secondary"><i>{ formatDate(companyStats.roeTTM.period) }</i></small></td>
+                                        <td>{ convertAndFormatToPercent(companyStats.roeTTM.value) }</td>
                                     </tr>
                                     <tr>
-                                        <td>Return on Invested Capital: <small className="text-secondary"><i>{ formatDate(companyStats.roeTTMPeriod) }</i></small></td>
-                                        <td>{ convertAndFormatToPercent(companyStats.roicTTM) }</td>
+                                        <td>Return on Invested Capital: <small className="text-secondary"><i>{ formatDate(companyStats.roeTTM.period) }</i></small></td>
+                                        <td>{ convertAndFormatToPercent(companyStats.roicTTM.value) }</td>
                                     </tr>
                                     <tr>
                                         <th className="pt-4" colSpan="2" >Target Prices</th>
                                     </tr>
                                     <tr>
                                         <td>OE Yield (10%):</td>
-                                        <td>{ convertToCurrency(companyStats.freeCashFlowPerShareTTM / .10) }</td>
+                                        <td>
+                                            { (companyStats.freeCashFlowPerShareTTM <= 0) && <div>N/A</div> }
+                                            { (companyStats.freeCashFlowPerShareTTM > 0) && convertToCurrency(companyStats.freeCashFlowPerShareTTM / .10) }
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

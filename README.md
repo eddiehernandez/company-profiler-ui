@@ -12,6 +12,7 @@ Company Profiler allows non-finance professionals to easily perform fundamental 
 * Serverless Framework
 * Jest for Unit Testing
 * Finnhub.io Stock API
+* AWS CodePipeline for CI/CD
 
 ## Getting Started:
 more to come....

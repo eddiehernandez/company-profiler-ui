@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const SearchBar = ({handleSearch}) => {
+const SearchBar = ({handleSearch, host}) => {
 
     const [selectedCompany, setSelectedCompany] = useState('');
     const handleClear = () => {
@@ -22,8 +22,7 @@ const SearchBar = ({handleSearch}) => {
           setError(null);
         }
         else {
-            const url = process.env.NODE_ENV === 'development' ? 'http://localhost:3000/companies' : 'https://tw704iw1u2.execute-api.us-east-2.amazonaws.com/';
-            console.log(process.env.NODE_ENV);
+            const url = `${host}/companies`
             console.log(url);
             fetch(url)
             .then(res => {
