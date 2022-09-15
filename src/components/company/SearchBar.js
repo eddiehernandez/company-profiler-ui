@@ -43,7 +43,7 @@ const SearchBar = ({handleSearch, host}) => {
                 setError('Unable to retrieve company list.  Please try again...');
             });            
         }
-    }, []);
+    }, [host]);
 
 
     return (  

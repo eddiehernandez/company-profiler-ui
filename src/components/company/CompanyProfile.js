@@ -69,7 +69,7 @@ const CompanyProfile = ({companyTicker, host}) => {
                     setError(`Unable to retrieve company, with ticker ${companyTicker}.  Tip: Make sure to select company ticker from list when performing a search.`);
                 });   
         }
-    }, [companyTicker]);
+    }, [companyTicker, host]);
 
 
     return (
@@ -81,10 +81,9 @@ const CompanyProfile = ({companyTicker, host}) => {
                     <div className="container-fluid py-5">
                         <h1 className="display-5 fw-bold">Welcome</h1>
                         <p className="col-md-8 fs-4">To get started, select the ticker symbol of a company you would like to research above and click on search.</p>
-                        <p className="col-md-8 fs-6 mb-3">Usage Tips: <span className="text-success">Green numbers are good</span>, <span className="text-warning">Yellow numbers are borderline</span> and <span className="text-danger">Red numbers are bad.</span>  Click on labels to learn more about different ratios and their acceptable values.</p>
-                        <figure className="col-md-8">
-                            <blockquote className="blockquote">
-                                <p>{ getRandomQuote() }</p>
+                        <figure className="col-md-8 fs-6">
+                            <blockquote className="blockquote fs-6">
+                                <p><i>{ getRandomQuote() }</i></p>
                             </blockquote>
                             <figcaption className="blockquote-footer">
                                 Warren Buffet
