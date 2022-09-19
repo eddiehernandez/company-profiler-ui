@@ -15,6 +15,8 @@ const SearchBar = ({handleSearch, host}) => {
         
         const cacheName = 'companySearchList';
         const cachedData = localStorage.getItem(cacheName);
+        const abortController = new AbortController()
+
         if (cachedData) {
           console.log('loading company list from local storage')
           setCompanySearchList(JSON.parse(cachedData));
@@ -24,7 +26,7 @@ const SearchBar = ({handleSearch, host}) => {
         else {
             const url = `${host}/companies`
             console.log(url);
-            fetch(url)
+            fetch(url, { signal: abortController.signal })
             .then(res => {
                 if (!res.ok)
                     throw Error('Unable to retrieve company list. Please try again... ')
@@ -38,11 +40,19 @@ const SearchBar = ({handleSearch, host}) => {
                 setError(null);
             })
             .catch(err => {
-                setIsPending(false);
-                console.log(err.message);
-                setError('Unable to retrieve company list.  Please try again...');
+                if (err.name === 'AbortError'){
+                    console.log('fetch aborted in searchbar')
+                }
+                else {
+                    setIsPending(false);
+                    console.log(err.message);
+                    setError('Unable to retrieve company list.  Please try again...');                    
+                }
+
             });            
         }
+
+        return () => abortController.abort();
     }, [host]);
 
 

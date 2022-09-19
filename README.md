@@ -3,6 +3,9 @@ Company Profiler allows non-finance professionals to easily perform fundamental 
 
 ## Technology Stack:
 ### Front-end:
+* Route 53
+* Cloudfront
+* AWS Certificate Manager
 * React
 * AWS S3 for Webhosting
 ### Back-end:

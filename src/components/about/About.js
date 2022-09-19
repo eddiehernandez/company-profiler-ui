@@ -9,9 +9,6 @@ const About = () => {
                     There is much more to come so please stand by and enjoy!  Reach out with any questions you may have.  Feedback is always welcome!
                 </p>
                 <p className="col-md-8 fs-6 mb-3">
-                    Technology Stack coming soon....
-                </p>
-                <p className="col-md-8 fs-6 mb-3">
                     Usage Tips: <br /><span className="text-success">Green numbers are good</span>, <span className="text-warning">Yellow numbers are borderline</span> and <span className="text-danger">Red numbers are bad.</span>  Click on labels to learn more about different ratios and their acceptable values.
                 </p>
             </div>

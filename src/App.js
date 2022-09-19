@@ -3,6 +3,7 @@ import Company from "./components/company/Company";
 import Footer from "./components/Footer"
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import About from "./components/about/About";
+import Welcome from "./components/Welcome";
 
 function App() {
   return (
@@ -17,10 +18,13 @@ function App() {
           <div className="py-1 mb-3 content">
             <Switch>
               <Route exact path="/">
-                <Company />
+                <Welcome />
               </Route>
               <Route path="/about">
                 <About />
+              </Route>
+              <Route path="/companies/:companyTicker">
+                <Company />
               </Route>
             </Switch>
           </div>
