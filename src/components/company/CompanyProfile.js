@@ -2,82 +2,67 @@ import { useEffect, useState } from "react";
 import NewsList from "./NewsList";
 import CompanyStats from "./CompanyStats";
 import TimeSeries from "./TimeSeries";
-import { convertToLargeCurrency, convertToCurrency } from '../../utils/helperFunctions';
+import { convertToCurrency } from '../../utils/helperFunctions';
 import { useParams } from 'react-router-dom'
+import { buildCompany } from '../../utils/companyDirector'
+import useFetch from "../../hooks/useFetch";
 
 const CompanyProfile = ({host}) => {
 
     const [company, setCompany] = useState(null);
-    const [isPending, setIsPending] = useState(false);
-    const [error, setError] = useState(null);    
+    // const [isPending, setIsPending] = useState(false);
+    // const [error, setError] = useState(null);    
     const { companyTicker } = useParams()
 
+    const url = `${host}/companies/${companyTicker}`
+    const { error, isPending, data } = useFetch(url)
 
     useEffect(() => {
-        const abortController = new AbortController()
-        if (companyTicker){
-            setCompany(null); //clear out older company
-            setIsPending(true);
-            setError(false);
-            console.log(`loading company with ticker ${companyTicker}`);
-            const url = `${host}/companies/${companyTicker}`
-            console.log(url);            
-            fetch(url, { signal: abortController.signal })
-                .then(res => {
-                    if (!res.ok)
-                        throw Error('Unable to retrieve company. Please try again... ')
-                    return res.json();
-                })
-                .then(data => {
-                    setIsPending(false);
-                    console.log(data); //debug statement
-                    const myCompany = {
-                        name: data.name,
-                        ticker: data.ticker,
-                        country: data.country,
-                        currency: data.currency,
-                        exchange: data.exchange,
-                        industry: data.industry,
-                        logo: data.logo,
-                        marketCapitalization: convertToLargeCurrency(data.marketCapitalization),
-                        sharesOutstanding: convertToLargeCurrency(data.sharesOutstanding),
-                        sharesOutstandingRaw: data.sharesOutstanding,
-                        website: data.website,
-                        stockPrice: data.stockPrice,
-                        stockPriceAsOfDateTime: data.stockPriceAsOfDateTime,
-                        companyStats: data.companyStats,
-                        timeSeries: data.timeSeries,
-                        companyNews: []
-                    }
-                    for (const news of data.companyNews)
-                        myCompany.companyNews.push({
-                            datetime: news?.datetime,
-                            headline: news?.headline,
-                            id: news?.id,
-                            image: news?.image,
-                            related: news?.related,
-                            summary: news?.summary,
-                            url: news?.url,
-                            source: news?.source    
-                        })
-                    console.log(myCompany)
-                    setCompany(myCompany); 
-                    setError(null);
-                })
-                .catch(err => {
-                    if (err.name === 'AbortError'){
-                        console.log('fetch aborted in companyprofile')
-                    }
-                    else {                    
-                        setIsPending(false);
-                        console.log(err.message);
-                        setError(`Unable to retrieve company, with ticker ${companyTicker}.  Tip: Make sure to select company ticker from list when performing a search.`);
-                    }
-                });   
+        if (data){
+            const myCompany = buildCompany(data)
+            console.log(myCompany)
+            setCompany(myCompany); 
         }
-        return () => abortController.abort()
 
-    }, [companyTicker, host]);
+    }, [data])
+
+    // useEffect(() => {
+    //     const abortController = new AbortController()
+    //     if (companyTicker){
+    //         setCompany(null); //clear out older company
+    //         setIsPending(true);
+    //         setError(false);
+    //         console.log(`loading company with ticker ${companyTicker}`);
+    //         const url = `${host}/companies/${companyTicker}`
+    //         console.log(url);            
+    //         fetch(url, { signal: abortController.signal })
+    //             .then(res => {
+    //                 if (!res.ok)
+    //                     throw Error('Unable to retrieve company. Please try again... ')
+    //                 return res.json();
+    //             })
+    //             .then(data => {
+    //                 setIsPending(false)
+    //                 console.log(data) //debug statement
+    //                 const myCompany = buildCompany(data)
+    //                 console.log(myCompany)
+    //                 setCompany(myCompany); 
+    //                 setError(null);
+    //             })
+    //             .catch(err => {
+    //                 if (err.name === 'AbortError'){
+    //                     console.log('fetch aborted in companyprofile')
+    //                 }
+    //                 else {                    
+    //                     setIsPending(false);
+    //                     console.log(err.message);
+    //                     setError(`Unable to retrieve company, with ticker ${companyTicker}.  Tip: Make sure to select company ticker from list when performing a search.`);
+    //                 }
+    //             });   
+    //     }
+    //     return () => abortController.abort()
+
+    // }, [companyTicker, host]);
 
 
     return (

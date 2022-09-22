@@ -1,7 +1,6 @@
 import { Link, useHistory } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 
-
 const Navbar = ({ host }) => {
 
   const [selectedCompany, setSelectedCompany] = useState('');
@@ -10,9 +9,36 @@ const Navbar = ({ host }) => {
 
   useEffect(() => {
         
-    const cacheName = 'companySearchList';
+    const cacheName = 'companySearchList'
     const cachedData = localStorage.getItem(cacheName);
     const abortController = new AbortController()
+
+    const fetchCompanySearchList = async (host) => {
+      try {
+        const url = `${host}/companies`
+        console.log(`url = ${url}`)
+        const response = await fetch(url, { signal: abortController.signal } )
+        if (!response.ok)
+          throw Error('Unable to retrieve company list. Please try again...')
+
+        const data = await response.json()
+
+        setCompanySearchList(data);
+        console.log('loaded company list from api');
+        localStorage.setItem(cacheName, JSON.stringify(data))
+        
+      }
+      catch (err){
+        if (err.name === 'AbortError'){
+          console.log('fetch aborted in searchbar')
+        }
+        else {
+            // setIsPending(false);
+            console.log(err.message);
+            // setError('Unable to retrieve company list.  Please try again...');                    
+        }
+      }
+    }
 
     if (cachedData) {
       console.log('loading company list from local storage')
@@ -21,34 +47,8 @@ const Navbar = ({ host }) => {
       // setError(null);
     }
     else {
-        const url = `${host}/companies`
-        console.log(url);
-        fetch(url, { signal: abortController.signal })
-        .then(res => {
-            if (!res.ok)
-                throw Error('Unable to retrieve company list. Please try again... ')
-            return res.json();
-        })
-        .then(data => {
-            // setIsPending(false);
-            setCompanySearchList(data);
-            console.log('loaded company list from api');
-            localStorage.setItem(cacheName, JSON.stringify(data))
-            // setError(null);
-        })
-        .catch(err => {
-            if (err.name === 'AbortError'){
-                console.log('fetch aborted in searchbar')
-            }
-            else {
-                // setIsPending(false);
-                console.log(err.message);
-                // setError('Unable to retrieve company list.  Please try again...');                    
-            }
-
-        });            
+      fetchCompanySearchList(host)         
     }
-
     return () => abortController.abort();
   }, [host]);
 
@@ -69,7 +69,7 @@ const Navbar = ({ host }) => {
       </a>
       <form className="row g-2 d-inline-flex mt-2 mt-md-0 ms-md-auto" onSubmit={handleSearch}>
           <div className="col-auto">
-              { companySearchList && <input value={ selectedCompany } onChange={ e => setSelectedCompany(e.target.value) } className="form-select" id="companySelection" name="companySelection" list="companyList" placeholder='company ticker...' size="15" /> }
+              { companySearchList && <input value={ selectedCompany } onChange={ e => setSelectedCompany(e.target.value) } className="form-select" id="companySelection" name="companySelection" list="companyList" placeholder='company ticker...'  /> }
               <datalist id="companyList">
                   {
                       companySearchList && companySearchList.map(x => (

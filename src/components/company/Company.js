@@ -1,8 +1,6 @@
 import CompanyProfile from './CompanyProfile';
 
-const Company = () => {
-
-    const host = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_DEV_API : process.env.REACT_APP_PROD_API 
+const Company = ({ host }) => {
 
     return (
         <div className="Company">
