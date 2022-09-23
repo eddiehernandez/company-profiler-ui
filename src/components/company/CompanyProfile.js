@@ -5,65 +5,22 @@ import TimeSeries from "./TimeSeries";
 import { convertToCurrency } from '../../utils/helperFunctions';
 import { useParams } from 'react-router-dom'
 import { buildCompany } from '../../utils/companyDirector'
-import useFetch from "../../hooks/useFetch";
+import useFetchWithCache from "../../hooks/useFetchWithCache"
 
 const CompanyProfile = ({host}) => {
 
-    const [company, setCompany] = useState(null);
-    // const [isPending, setIsPending] = useState(false);
-    // const [error, setError] = useState(null);    
+    const [company, setCompany] = useState(null) 
     const { companyTicker } = useParams()
 
     const url = `${host}/companies/${companyTicker}`
-    const { error, isPending, data } = useFetch(url)
+    const { error, isPending, data } = useFetchWithCache(url, `cp.${companyTicker}`)
 
     useEffect(() => {
-        if (data){
-            const myCompany = buildCompany(data)
-            console.log(myCompany)
-            setCompany(myCompany); 
-        }
-
+        if (data)
+            setCompany(buildCompany(data))
+        else
+            setCompany(null)
     }, [data])
-
-    // useEffect(() => {
-    //     const abortController = new AbortController()
-    //     if (companyTicker){
-    //         setCompany(null); //clear out older company
-    //         setIsPending(true);
-    //         setError(false);
-    //         console.log(`loading company with ticker ${companyTicker}`);
-    //         const url = `${host}/companies/${companyTicker}`
-    //         console.log(url);            
-    //         fetch(url, { signal: abortController.signal })
-    //             .then(res => {
-    //                 if (!res.ok)
-    //                     throw Error('Unable to retrieve company. Please try again... ')
-    //                 return res.json();
-    //             })
-    //             .then(data => {
-    //                 setIsPending(false)
-    //                 console.log(data) //debug statement
-    //                 const myCompany = buildCompany(data)
-    //                 console.log(myCompany)
-    //                 setCompany(myCompany); 
-    //                 setError(null);
-    //             })
-    //             .catch(err => {
-    //                 if (err.name === 'AbortError'){
-    //                     console.log('fetch aborted in companyprofile')
-    //                 }
-    //                 else {                    
-    //                     setIsPending(false);
-    //                     console.log(err.message);
-    //                     setError(`Unable to retrieve company, with ticker ${companyTicker}.  Tip: Make sure to select company ticker from list when performing a search.`);
-    //                 }
-    //             });   
-    //     }
-    //     return () => abortController.abort()
-
-    // }, [companyTicker, host]);
-
 
     return (
         <div className="CompanyProfile">

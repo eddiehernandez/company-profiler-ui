@@ -1,56 +1,65 @@
 import { Link, useHistory } from 'react-router-dom'
 import { useState, useEffect } from 'react';
+import useFetchWithCache from '../hooks/useFetchWithCache'
 
 const Navbar = ({ host }) => {
 
   const [selectedCompany, setSelectedCompany] = useState('');
   const [companySearchList, setCompanySearchList] = useState(null);
   const history = useHistory()
+  
+  const url = `${host}/companies`
+  const { error, isPending, data} = useFetchWithCache(url, 'cp.tickersList')
 
   useEffect(() => {
+    setCompanySearchList(data)
+  }, [data])
+
+
+  // useEffect(() => {
         
-    const cacheName = 'companySearchList'
-    const cachedData = localStorage.getItem(cacheName);
-    const abortController = new AbortController()
+  //   const cacheName = 'companySearchList'
+  //   const cachedData = localStorage.getItem(cacheName);
+  //   const abortController = new AbortController()
 
-    const fetchCompanySearchList = async (host) => {
-      try {
-        const url = `${host}/companies`
-        console.log(`url = ${url}`)
-        const response = await fetch(url, { signal: abortController.signal } )
-        if (!response.ok)
-          throw Error('Unable to retrieve company list. Please try again...')
+  //   const fetchCompanySearchList = async (host) => {
+  //     try {
+  //       const url = `${host}/companies`
+  //       console.log(`url = ${url}`)
+  //       const response = await fetch(url, { signal: abortController.signal } )
+  //       if (!response.ok)
+  //         throw Error('Unable to retrieve company list. Please try again...')
 
-        const data = await response.json()
+  //       const data = await response.json()
 
-        setCompanySearchList(data);
-        console.log('loaded company list from api');
-        localStorage.setItem(cacheName, JSON.stringify(data))
+  //       setCompanySearchList(data);
+  //       console.log('loaded company list from api');
+  //       localStorage.setItem(cacheName, JSON.stringify(data))
         
-      }
-      catch (err){
-        if (err.name === 'AbortError'){
-          console.log('fetch aborted in searchbar')
-        }
-        else {
-            // setIsPending(false);
-            console.log(err.message);
-            // setError('Unable to retrieve company list.  Please try again...');                    
-        }
-      }
-    }
+  //     }
+  //     catch (err){
+  //       if (err.name === 'AbortError'){
+  //         console.log('fetch aborted in searchbar')
+  //       }
+  //       else {
+  //           // setIsPending(false);
+  //           console.log(err.message);
+  //           // setError('Unable to retrieve company list.  Please try again...');                    
+  //       }
+  //     }
+  //   }
 
-    if (cachedData) {
-      console.log('loading company list from local storage')
-      setCompanySearchList(JSON.parse(cachedData));
-      // setIsPending(false);
-      // setError(null);
-    }
-    else {
-      fetchCompanySearchList(host)         
-    }
-    return () => abortController.abort();
-  }, [host]);
+  //   if (cachedData) {
+  //     console.log('loading company list from local storage')
+  //     setCompanySearchList(JSON.parse(cachedData));
+  //     // setIsPending(false);
+  //     // setError(null);
+  //   }
+  //   else {
+  //     fetchCompanySearchList(host)         
+  //   }
+  //   return () => abortController.abort();
+  // }, [host]);
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -69,6 +78,8 @@ const Navbar = ({ host }) => {
       </a>
       <form className="row g-2 d-inline-flex mt-2 mt-md-0 ms-md-auto" onSubmit={handleSearch}>
           <div className="col-auto">
+              { isPending && <div>Loading...</div> }
+              { error && <div>{ error }</div>}
               { companySearchList && <input value={ selectedCompany } onChange={ e => setSelectedCompany(e.target.value) } className="form-select" id="companySelection" name="companySelection" list="companyList" placeholder='company ticker...'  /> }
               <datalist id="companyList">
                   {
