@@ -43,7 +43,7 @@ const Navbar = ({ host }) => {
           <div className="col-auto">
               { isPending && <div>Loading...</div> }
               { error && <div>Unable to load tickers.</div>}
-              { companySearchList && <input value={ selectedCompany } onChange={ e => setSelectedCompany(e.target.value) } className="form-select" id="companySelection" name="companySelection" list="companyList" placeholder='company ticker...'  /> }
+              {user && companySearchList && <input value={ selectedCompany } onChange={ e => setSelectedCompany(e.target.value) } className="form-select" id="companySelection" name="companySelection" list="companyList" placeholder='company ticker...'  /> }
               <datalist id="companyList">
                   {
                       companySearchList && companySearchList.map(x => (
@@ -53,7 +53,7 @@ const Navbar = ({ host }) => {
               </datalist>
           </div>
           <div className="col-auto">
-              { companySearchList && <button className="btn btn-outline-primary" type="submit" disabled={isPending}>search</button> }
+              {user && companySearchList && <button className="btn btn-outline-primary" type="submit" disabled={isPending}>search</button> }
           </div>
       </form>
       <nav className="d-inline-flex mt-2 mt-md-0 ms-md-auto">
