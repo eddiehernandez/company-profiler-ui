@@ -58,10 +58,10 @@ const Navbar = ({ host }) => {
       </form>
       <nav className="d-inline-flex mt-2 mt-md-0 ms-md-auto">
 
-          {user && <button className="btn btn-link me-3 py-1 text-dark text-decoration-none" onClick={handleLogout}>Logout</button>}
-          {!user && <Link className="me-3 py-2 text-dark text-decoration-none" to="/signup">Signup</Link>}
-          {!user && <Link className="me-3 py-2 text-dark text-decoration-none" to="/login">Login</Link>}
-          <Link className="me-3 py-2 text-dark text-decoration-none" to="/about">About</Link> 
+          {user && <button className="btn btn-link me-3 py-1 text-dark text-decoration-none" onClick={handleLogout}>logout</button>}
+          {!user && <Link className="me-3 py-2 text-dark text-decoration-none" to="/signup">signup</Link>}
+          {!user && <Link className="me-3 py-2 text-dark text-decoration-none" to="/login">login</Link>}
+          <Link className="me-3 py-2 text-dark text-decoration-none" to="/about">about</Link> 
       </nav>
     </div>
   );

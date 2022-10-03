@@ -7,7 +7,6 @@ import Company from "./components/company/Company";
 import Footer from "./components/Footer"
 import About from "./components/about/About";
 import Welcome from "./components/Welcome";
-import NotFound from "./components/NotFound";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 
