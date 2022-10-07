@@ -7,7 +7,7 @@ const useFetch = (url, cacheName) => {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState(null);
   const { user, dispatch } = useAuthContext()
-  
+
 
   useEffect(() => {
     const abortController = new AbortController()

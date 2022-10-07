@@ -44,7 +44,8 @@ function App() {
                 </Route>
                 
                 <Route path="/companies/:companyTicker">
-                  { user ? <Company host={ host } /> : <Redirect to="/login" /> }
+                  { user && <Company host={ host } /> }
+                  { !user && <Login /> }
                 </Route>
 
                 <Route path="/login">

@@ -7,21 +7,108 @@ import { convertToCurrency } from '../../utils/helperFunctions';
 import { useParams } from 'react-router-dom'
 import { buildCompany } from '../../utils/companyDirector'
 import useFetchWithCache from "../../hooks/useFetchWithCache"
+import { useAuthContext } from '../../hooks/useAuthContext'
+import { useFavsContext } from "../../hooks/useFavsContext";
 
 const CompanyProfile = ({host}) => {
 
+    const { favs, dispatch } = useFavsContext()
+    const [isFavorite, setIsFavorite] = useState(false)
     const [company, setCompany] = useState(null) 
+    const [favsPending, setFavsPending] = useState(false)
     const { companyTicker } = useParams()
 
     const url = `${host}/companies/${companyTicker}`
     const { error, isPending, data } = useFetchWithCache(url, `cp.${companyTicker}`)
+    const { user } = useAuthContext()
+
+    const addFavorite = async () => {
+        setFavsPending(true)
+        const url = `${host}/favorites`
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    ticker: companyTicker
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            })
+
+            const json = await response.json()
+
+            if (!response.ok){
+                console.error(json.error)
+            }
+            if (response.ok){
+                console.log(`added new favorite...`, json)
+                dispatch({ type: 'CREATE_FAV', payload: json })
+                setIsFavorite(true)
+            }
+        }
+        catch (error){
+            console.error(error)
+        }
+        finally{
+            setFavsPending(false)
+        }
+
+
+    }
+
+    const deleteFavorite = async () => {
+        setFavsPending(true)
+        console.log(`removing ${companyTicker} from favs`)
+        const url = `${host}/favorites/${companyTicker}`
+        try {
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            })
+            // const json = await response.json()
+
+            if (response.ok){
+                console.log('deleted fav')
+                dispatch({ type: 'DELETE_FAV', payload: {
+                    email: user?.email,
+                    ticker: companyTicker
+                }})
+                setIsFavorite(false)
+            }
+
+        }
+        catch (error){
+            console.error(error)
+        }
+        finally{
+            setFavsPending(false)
+        }
+
+    }
+
 
     useEffect(() => {
-        if (data)
+        if (data){
             setCompany(buildCompany(data))
-        else
+            if (favs){
+                if (favs.filter(f => f.ticker === companyTicker).length > 0){
+                    setIsFavorite(true)
+                }
+                else {
+                    setIsFavorite(false)
+                }
+            }
+
+        }
+        else {
             setCompany(null)
-    }, [data])
+        }
+    }, [data, companyTicker, favs])
 
     return (
         <div className="CompanyProfile">
@@ -71,7 +158,18 @@ const CompanyProfile = ({host}) => {
 
                         </table>
                     </div>
-                    <div className="col-sm-1">&nbsp;</div>
+                    <div className="col-sm-1">
+                        { isFavorite && !favsPending &&
+                            <svg onClick={deleteFavorite} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-star-fill" viewBox="0 0 16 16" style={{color: "orange"}}>
+                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                            </svg>
+                        }
+                        { !isFavorite && !favsPending &&
+                            <svg onClick={addFavorite} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-star" viewBox="0 0 16 16" style={{color: "orange"}}>
+                                <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                            </svg>
+                        }                 
+                    </div>
                     <div className="col-sm-3 text-left"><img className="img-fluid float-left" alt="" src={company.logo} /></div>
                 </div>
                 <div className="row my-3">

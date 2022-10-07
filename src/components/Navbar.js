@@ -1,18 +1,26 @@
 import { Link, useHistory } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import useFetchWithCache from '../hooks/useFetchWithCache'
+import useFetch from '../hooks/useFetch'
 import { useLogout } from '../hooks/useLogout'
 import { useAuthContext } from '../hooks/useAuthContext';
+import { useFavsContext } from '../hooks/useFavsContext';
 
 const Navbar = ({ host }) => {
+
+  const { favs: favorites, dispatch } = useFavsContext()
 
   const [selectedCompany, setSelectedCompany] = useState('');
   const [companySearchList, setCompanySearchList] = useState(null);
   const history = useHistory()
   const { user } = useAuthContext()
+  // const [favorites, setFavorites] = useState(null)
   
-  const url = `${host}/companies`
-  const { error, isPending, data} = useFetchWithCache(url, 'cp.tickersList')
+  const companiesUrl = `${host}/companies`
+  const favoritesUrl = `${host}/favorites`
+
+  const { error, isPending, data} = useFetchWithCache(companiesUrl, 'cp.tickersList')
+  const { error: favsError, isPending: favsIsPending, data: favsData} = useFetch(favoritesUrl)
 
   const { logout } = useLogout()
 
@@ -20,9 +28,21 @@ const Navbar = ({ host }) => {
     setCompanySearchList(data)
   }, [data])
 
+  useEffect(() => {
+    // setFavorites(favsData)
+    dispatch({ type: 'SET_FAVS', payload: favsData})
+
+  }, [dispatch, favsData])
+
   const handleSearch = (e) => {
     e.preventDefault()
     history.push(`/companies/${selectedCompany}`)
+    setSelectedCompany('')
+  }
+
+  const handleFavorite = (e, selectedFavorite) => {
+    e.preventDefault()
+    history.push(`/companies/${selectedFavorite}`)
     setSelectedCompany('')
   }
 
@@ -58,9 +78,32 @@ const Navbar = ({ host }) => {
       </form>
       <nav className="d-inline-flex mt-2 mt-md-0 ms-md-auto">
 
+        
+        {user && 
+          <div className="nav-item dropdown me-3 py-2">
+            <a className="nav-link dropdown-toggle" href="/#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {!favsIsPending && <span>favorites</span>} 
+              {favsError && <span>{ favsError }</span>}
+            </a>
+            { favorites && 
+              <ul className="dropdown-menu">
+              {favorites.map(f => (
+                <li key={f.ticker}><a onClick={ (e, ticker) => handleFavorite(e, f.ticker) } className="dropdown-item" href="/#">{f.ticker}</a></li>
+              ))}
+              {(favorites.length <= 0) && <li><a className="dropdown-item" href="/#">no favorites...</a></li>}
+              </ul>
+            }
+
+          </div>
+        }
+
+
           {user && <button className="btn btn-link me-3 py-1 text-dark text-decoration-none" onClick={handleLogout}>logout</button>}
           {!user && <Link className="me-3 py-2 text-dark text-decoration-none" to="/signup">signup</Link>}
           {!user && <Link className="me-3 py-2 text-dark text-decoration-none" to="/login">login</Link>}
+
+
+
           <Link className="me-3 py-2 text-dark text-decoration-none" to="/about">about</Link> 
       </nav>
     </div>
