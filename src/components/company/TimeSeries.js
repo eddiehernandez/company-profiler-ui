@@ -42,6 +42,29 @@ const TimeSeries = ({timeSeries}) => {
                     </tbody>
                 </table> 
             </div>
+            { timeSeries?.priceFreeCashFlow && 
+            <div className="row mt-3">
+                <table className="table">
+                    <thead>
+                        <tr><th colSpan={timeSeries.priceFreeCashFlow?.length}>Price to Free Cash Flow</th></tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            {timeSeries.priceFreeCashFlow.map(metric => (
+                                <td className="text-end" key={metric.period}>{ formatDateNoParenthesis(metric.period) }</td>
+                            ))}
+                        </tr>
+                        <tr>
+                            {timeSeries.priceFreeCashFlow.map(metric => (
+                                <td className="text-end" key={metric.period}><span className={getRatioTextColorReverse(metric.value, 10, 14)}>{ metric.value } ({ (1 / parseFloat(metric.value) * 100).toFixed(2) }%)</span></td>
+                            ))}
+                        </tr>
+                    </tbody>
+                </table> 
+            </div>
+            }
+
 
         </div>
       );

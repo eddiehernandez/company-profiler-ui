@@ -15,6 +15,9 @@ function App() {
   const host = process.env.REACT_APP_API
   const { user } = useAuthContext()
 
+  // const queryParams = new URLSearchParams(window.location.search)
+  // const tab = queryParams.get("tab") ?? 'none'
+
   return (
     <div className="App">
 

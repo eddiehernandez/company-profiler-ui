@@ -10,8 +10,8 @@ import useFetchWithCache from "../../hooks/useFetchWithCache"
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { useFavsContext } from "../../hooks/useFavsContext";
 
-const CompanyProfile = ({host}) => {
-
+const CompanyProfile = ({ host }) => {
+    
     const { favs, dispatch } = useFavsContext()
     const [isFavorite, setIsFavorite] = useState(false)
     const [company, setCompany] = useState(null) 

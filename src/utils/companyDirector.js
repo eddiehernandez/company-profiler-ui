@@ -2,7 +2,7 @@
 import { convertToLargeCurrency } from './helperFunctions'
 
 const buildCompany = (data) => {
-
+    // console.log(data)
     let company = {
         name: data.name,
         ticker: data.ticker,
@@ -39,7 +39,7 @@ const buildCompany = (data) => {
             source: news?.source    
         })
 
-
+        // console.log(company)
     return company;
 
 

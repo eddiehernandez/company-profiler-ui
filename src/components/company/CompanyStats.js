@@ -85,21 +85,21 @@ const CompanyStats = ({companyStats, stockPrice, sharesOutstanding}) => {
                                     </tr>
 
                                     <tr>
-                                        <td>Free Cash Flow (TTM):</td>
-                                        <td className={ getRatioTextColor((companyStats.freeCashFlowTTM), .01, 0) }>{convertToLargeCurrency(companyStats.freeCashFlowTTM)}</td>
+                                        <td>Price to Cash Flow (TTM):</td>
+                                        <td className={ getRatioTextColorReverse((companyStats.pfcfShareTTM), 10, 14) }>{ companyStats.pfcfShareTTM }</td>
                                     </tr>
                                     <tr>
                                         <td>
                                             Owner Earnings (TTM):<br/>
-                                            <small className="text-secondary">aka FCF per Share</small>
+                                            <small className="text-secondary">aka CF per Share</small>
                                         </td>
-                                        <td className={ getRatioTextColor(companyStats.freeCashFlowPerShareTTM, .01, 0) }>{convertToCurrency(companyStats.freeCashFlowPerShareTTM)}</td>
+                                        <td className={ getRatioTextColor(companyStats.cashFlowPerShareTTM, .01, 0) }>{convertToCurrency(companyStats.cashFlowPerShareTTM)}</td>
                                     </tr>
                                     <tr>
                                         <td>Owner Earnings Yield (TTM):</td>
                                         { !stockPrice && <td>N/A</td> }
                                         { stockPrice && (stockPrice !== 0) &&
-                                            <td className={ getRatioTextColor(companyStats.freeCashFlowPerShareTTM / stockPrice * 100, 10, 9)}>{ convertAndFormatToPercent(companyStats.freeCashFlowPerShareTTM / stockPrice) }</td>
+                                            <td className={ getRatioTextColor(companyStats.cashFlowPerShareTTM / stockPrice * 100, 10, 9)}>{ convertAndFormatToPercent(companyStats.cashFlowPerShareTTM / stockPrice) }</td>
                                         }
                                     </tr>
                                 </tbody>
@@ -145,8 +145,8 @@ const CompanyStats = ({companyStats, stockPrice, sharesOutstanding}) => {
                                     <tr>
                                         <td>OE Yield (10%):</td>
                                         <td>
-                                            { (companyStats.freeCashFlowPerShareTTM <= 0) && <div>N/A</div> }
-                                            { (companyStats.freeCashFlowPerShareTTM > 0) && convertToCurrency(companyStats.freeCashFlowPerShareTTM / .10) }
+                                            { (companyStats.cashFlowPerShareTTM <= 0) && <div>N/A</div> }
+                                            { (companyStats.cashFlowPerShareTTM > 0) && convertToCurrency(companyStats.cashFlowPerShareTTM / .10) }
                                         </td>
                                     </tr>
                                 </tbody>
